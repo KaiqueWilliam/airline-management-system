@@ -1,0 +1,23 @@
+{
+  "name": "linhasaereas_ed2",
+  "version": "1.0.0",
+  "description": "A **web system for flight ticket sales and management**, developed as part of the *Data Structures II* course.   This project simulates the internal and external operations of an airline company using **Python, Flask**, and fundamental **data structures**.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KaiqueWilliam/airline-management-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KaiqueWilliam/airline-management-system/issues"
+  },
+  "homepage": "https://github.com/KaiqueWilliam/airline-management-system#readme",
+  "dependencies": {
+    "bootstrap": "^5.3.8"
+  }
+}
