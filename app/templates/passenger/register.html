@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+  <div class="card shadow-sm p-4" style="max-width: 520px; width: 100%; border-radius: 12px;">
+    <div class="text-center mb-3">
+      <h4 class="mb-0">Cadastro de Passageiro</h4>
+      <small class="text-muted">Crie sua conta</small>
+    </div>
+
+    <form method="POST" action="{{ url_for('passenger.register') }}">
+      <div class="mb-3">
+        <label class="form-label">Nome completo</label>
+        <input type="text" class="form-control" name="nome" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">CPF ou E-mail</label>
+        <input type="text" class="form-control" name="cpf_email" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Senha</label>
+        <input type="password" class="form-control" name="senha" required>
+      </div>
+      <div class="d-grid">
+        <button class="btn btn-success">Registrar</button>
+      </div>
+      <div class="text-center mt-2">
+        <a href="{{ url_for('passenger.login') }}">Já tenho conta</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

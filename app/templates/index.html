@@ -1,12 +1,15 @@
-<!doctype html>
-<html lang="pt-br">
-  <head>
-    <title>Minha Página</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  </head>
-  <body>
-    <h1>Olá, {{ nome_do_usuario }}!</h1>
-    <p>Bem-vindo à minha primeira página com Flask.</p>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="container d-flex align-items-center justify-content-center min-vh-75">
+  <div class="text-center">
+    <h1 class="display-5 text-white">Linhas Aéreas ED-II</h1>
+    <p class="lead text-white-50">Sistema de Vendas de Passagens</p>
+
+    <div class="mt-4">
+      <a href="{{ url_for('admin.login') }}" class="btn btn-lg btn-light me-2">Login Administrativo</a>
+      <a href="{{ url_for('passenger.login') }}" class="btn btn-lg btn-outline-light me-2">Login Passageiro</a>
+      <a href="{{ url_for('passenger.register') }}" class="btn btn-lg btn-outline-light">Registrar Passageiro</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

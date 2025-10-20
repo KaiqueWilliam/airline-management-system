@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<div class="container py-5">
+  <div class="card shadow-lg mx-auto" style="max-width: 600px; border-radius: 16px;">
+    <div class="card-header bg-primary text-white text-center py-3">
+      <h4 class="mb-0">Painel do Passageiro</h4>
+    </div>
+    <div class="card-body">
+      <p><strong>Nome:</strong> {{ user.nome }}</p>
+      <p><strong>CPF/E-mail:</strong> {{ user.cpf_email }}</p>
+      <p><strong>Milhas acumuladas:</strong> {{ user.miles }}</p>
+
+      <div class="d-grid mt-4">
+        <a href="{{ url_for('passenger.logout') }}" class="btn btn-danger">Sair</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
