@@ -1,15 +1,45 @@
 {% extends 'base.html' %}
 {% block conteudo %}
-<div class="container d-flex align-items-center justify-content-center min-vh-75">
-  <div class="text-center">
-    <h1 class="display-5 text-white">Linhas Aéreas ED-II</h1>
-    <p class="lead text-white-50">Sistema de Vendas de Passagens</p>
-
-    <div class="mt-4">
-      <a href="{{ url_for('admin.login') }}" class="btn btn-lg btn-light me-2">Login Administrativo</a>
-      <a href="{{ url_for('passenger.login') }}" class="btn btn-lg btn-outline-light me-2">Login Passageiro</a>
-      <a href="{{ url_for('passenger.register') }}" class="btn btn-lg btn-outline-light">Registrar Passageiro</a>
+<div class="container hero-section">
+  <div class="card shadow-lg p-4 p-md-5" style="max-width: 800px; width: 100%;">
+    
+    <div class="text-center mb-4">
+      <h1 class="display-5">Encontre sua próxima viagem</h1>
+      <p class="lead text-muted">Busque passagens para qualquer lugar do mundo.</p>
     </div>
+
+    <form>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="origem" class="form-label">Origem</label>
+          <input type="text" class="form-control" id="origem" placeholder="Cidade ou aeroporto">
+        </div>
+        <div class="col-md-6">
+          <label for="destino" class="form-label">Destino</label>
+          <input type="text" class="form-control" id="destino" placeholder="Cidade ou aeroporto">
+        </div>
+        <div class="col-md-4">
+          <label for="data-ida" class="form-label">Data (Ida)</label>
+          <input type="date" class="form-control" id="data-ida">
+        </div>
+        <div class="col-md-4">
+          <label for="data-volta" class="form-label">Data (Volta)</label>
+          <input type="date" class="form-control" id="data-volta">
+        </div>
+        <div class="col-md-4">
+          <label for="passageiros" class="form-label">Passageiros</label>
+          <select id="passageiros" class="form-select">
+            <option selected>1 Adulto</option>
+            <option>2 Adultos</option>
+            <option>3 Adultos</option>
+            <option>1 Adulto, 1 Criança</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-grid mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">Buscar Voos</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

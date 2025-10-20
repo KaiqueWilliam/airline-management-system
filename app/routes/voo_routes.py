@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 
 voo_bp = Blueprint('voos', __name__, url_prefix='/voos')
 
-# DICIONÁRIO OBRIGATÓRIO DE VOOS (exigido pelo trabalho)
+
 voos = {
     "LA1001": {"origem": "São Paulo", "destino": "Rio de Janeiro", "horario": "08:30", "preco": 450},
     "LA1002": {"origem": "Rio de Janeiro", "destino": "Brasília", "horario": "10:45", "preco": 520},

@@ -6,22 +6,47 @@
   <title>Linhas Aéreas ED-II</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+   
+    body {
+      background-image: url("{{ url_for('static', filename='images/fundo_aviacao.png') }}");
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      padding-top: 70px;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="{{ url_for('index') }}">ED-II</a>
-      <div class="d-flex">
-        {% if session.get('admin') %}
-          <span class="navbar-text me-2">Admin: {{ session.get('admin') }}</span>
-          <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-light btn-sm">Sair</a>
-        {% elif session.get('passenger') %}
-          <span class="navbar-text me-2">Passageiro: {{ session.get('passenger') }}</span>
-          <a href="{{ url_for('passenger.logout') }}" class="btn btn-outline-light btn-sm">Sair</a>
-        {% else %}
-          <a href="{{ url_for('admin.login') }}" class="btn btn-outline-light btn-sm me-2">Admin</a>
-          <a href="{{ url_for('passenger.login') }}" class="btn btn-light btn-sm">Entrar</a>
-        {% endif %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 fixed-top">
+    <div class="container-fluid px-4"> 
+      <a class="navbar-brand" href="{{ url_for('index') }}">
+    <img src="{{ url_for('static', filename='images/logo_aviao.svg') }}" alt="Logo Avião" class="logo-icon"> 
+    <span class="ms-1">ED-II Airlines</span> 
+    </a>
+        
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          </ul>
+
+        <div class="navbar-nav d-flex">
+          {% if session.get('admin') %}
+            <span class="navbar-text me-2">Admin: {{ session.get('admin') }}</span>
+            <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-light btn-sm">Sair</a>
+          {% elif session.get('passenger') %}
+            <span class="navbar-text me-2">Passageiro: {{ session.get('passenger') }}</span>
+            <a href="{{ url_for('passenger.logout') }}" class="btn btn-outline-light btn-sm">Sair</a>
+          {% else %}
+            <a href="{{ url_for('admin.login') }}" class="btn btn-outline-secondary btn-sm me-3">Admin</a>
+            <a href="{{ url_for('passenger.login') }}" class="btn btn-light btn-sm me-3">Entrar</a>
+            <a href="{{ url_for('passenger.register') }}" class="btn btn-primary btn-sm">Registrar</a>
+          {% endif %}
+        </div>
       </div>
     </div>
   </nav>
@@ -30,7 +55,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, msg in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          <div class="alert alert-{{ category }} alert-dismissible fade show card" role="alert" style="background-color: rgba(255, 255, 255, 0.9);">
             {{ msg }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
