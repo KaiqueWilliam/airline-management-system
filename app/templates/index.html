@@ -1,45 +1,44 @@
-{% extends 'base.html' %}
-{% block conteudo %}
-<div class="container hero-section">
-  <div class="card shadow-lg p-4 p-md-5" style="max-width: 800px; width: 100%;">
-    
-    <div class="text-center mb-4">
-      <h1 class="display-5">Encontre sua próxima viagem</h1>
-      <p class="lead text-muted">Busque passagens para qualquer lugar do mundo.</p>
-    </div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo à Linhas Aéreas ED-II</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        main { flex: 1; }
+    </style>
+</head>
+<body>
 
-    <form>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="origem" class="form-label">Origem</label>
-          <input type="text" class="form-control" id="origem" placeholder="Cidade ou aeroporto">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand text-warning fw-bold" href="{{ url_for('index') }}">
+                ✈️ Linhas Aéreas ED-II
+            </a>
+            <div class="d-flex">
+                <a href="{{ url_for('admin.login') }}" class="btn btn-warning text-dark fw-bold">Acesso Administrativo</a>
+            </div>
         </div>
-        <div class="col-md-6">
-          <label for="destino" class="form-label">Destino</label>
-          <input type="text" class="form-control" id="destino" placeholder="Cidade ou aeroporto">
+    </nav>
+
+    <main>
+        <div class="bg-dark text-light text-center p-5 mb-4">
+            <div class="container py-5">
+                <h1 class="display-4 fw-bold text-warning">Sua jornada começa aqui</h1>
+                <p class="fs-4 col-md-8 mx-auto">
+                    Consulte voos econômicos nacionais e internacionais.
+                </p>
+            </div>
         </div>
-        <div class="col-md-4">
-          <label for="data-ida" class="form-label">Data (Ida)</label>
-          <input type="date" class="form-control" id="data-ida">
-        </div>
-        <div class="col-md-4">
-          <label for="data-volta" class="form-label">Data (Volta)</label>
-          <input type="date" class="form-control" id="data-volta">
-        </div>
-        <div class="col-md-4">
-          <label for="passageiros" class="form-label">Passageiros</label>
-          <select id="passageiros" class="form-select">
-            <option selected>1 Adulto</option>
-            <option>2 Adultos</option>
-            <option>3 Adultos</option>
-            <option>1 Adulto, 1 Criança</option>
-          </select>
-        </div>
-      </div>
-      <div class="d-grid mt-4">
-        <button type="submit" class="btn btn-primary btn-lg">Buscar Voos</button>
-      </div>
-    </form>
-  </div>
-</div>
-{% endblock %}
+
+    </main>
+
+    <footer class="text-center p-4 mt-auto bg-dark text-white-50">
+        <p class="mb-0">&copy; 2025 Linhas Aéreas ED-II - Projeto de Estrutura de Dados II (UNEB)</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
