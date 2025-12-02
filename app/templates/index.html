@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bem-vindo à Linhas Aéreas ED-II</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { display: flex; flex-direction: column; min-height: 100vh; }
         main { flex: 1; }
@@ -24,21 +24,37 @@
     </nav>
 
     <main>
+        {% block body %}
         <div class="bg-dark text-light text-center p-5 mb-4">
             <div class="container py-5">
                 <h1 class="display-4 fw-bold text-warning">Sua jornada começa aqui</h1>
                 <p class="fs-4 col-md-8 mx-auto">
                     Consulte voos econômicos nacionais e internacionais.
                 </p>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('passenger.search_flights') }}" class="btn btn-success btn-lg fw-bold">
+                        Comprar Passagens
+                    </a>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} mt-3">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
             </div>
         </div>
-
+        {% endblock %}
     </main>
 
     <footer class="text-center p-4 mt-auto bg-dark text-white-50">
         <p class="mb-0">&copy; 2025 Linhas Aéreas ED-II - Projeto de Estrutura de Dados II (UNEB)</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

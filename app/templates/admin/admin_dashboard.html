@@ -11,7 +11,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container-fluid">
             <a class="navbar-brand text-warning" href="{{ url_for('admin.dashboard') }}">Painel Admin - Gestão de Voos</a>
+            
             <div class="d-flex">
+                <a href="{{ url_for('admin.clientes') }}" class="btn btn-outline-info me-2">Gestão de Clientes</a>
                 <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-danger">Sair</a>
             </div>
         </div>
@@ -79,7 +81,7 @@
             </div>
         </div>
 
-        <h2 class="mb-3">Voos Atuais (Dicionário de Voos)</h2>
+        <h2 class="mb-3">Voos Atuais</h2>
         <div class="card shadow-sm">
             <div class="table-responsive">
                 <table class="table table-striped table-hover mb-0">
@@ -106,7 +108,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="8" class="text-center">Nenhum voo cadastrado no dicionário.</td>
+                            <td colspan="8" class="text-center">Nenhum voo cadastrado.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

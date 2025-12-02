@@ -1,0 +1,41 @@
+{% extends 'index.html' %}
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">✈️ Para onde você quer ir?</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card p-4 shadow mx-auto" style="max-width: 800px;">
+        <form action="{{ url_for('passenger.search_flights') }}" method="POST">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Origem</label>
+                    <input list="cidades" name="origem" class="form-control" placeholder="Ex: Salvador" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Destino</label>
+                    <input list="cidades" name="destino" class="form-control" placeholder="Ex: São Paulo" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                </div>
+            </div>
+            <datalist id="cidades">
+                {% for c in cidades %}
+                <option value="{{ c }}">
+                {% endfor %}
+            </datalist>
+        </form>
+    </div>
+    
+    <div class="text-center mt-3">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
+{% endblock %}
