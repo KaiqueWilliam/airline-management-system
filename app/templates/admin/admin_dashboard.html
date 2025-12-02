@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Voos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand text-warning" href="{{ url_for('admin.dashboard') }}">Painel Admin - Gestão de Voos</a>
+            <div class="d-flex">
+                <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-danger">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="accordion mb-4" id="accordionCadastro">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm" aria-expanded="false" aria-controls="collapseForm">
+                        Cadastrar Novo Voo
+                    </button>
+                </h2>
+                <div id="collapseForm" class="accordion-collapse collapse" data-bs-parent="#accordionCadastro">
+                    <div class="accordion-body">
+                        <form action="{{ url_for('admin.add_voo') }}" method="POST">
+                            <div class="row g-3">
+                                <div class="col-md-2">
+                                    <label for="codigo" class="form-label">Código Voo</label>
+                                    <input type="text" class="form-control" name="codigo" id="codigo" placeholder="ex: ED400" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="origem" class="form-label">Origem</label>
+                                    <input type="text" class="form-control" name="origem" id="origem" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="destino" class="form-label">Destino</label>
+                                    <input type="text" class="form-control" name="destino" id="destino" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="aeronave" class="form-label">Aeronave</label>
+                                    <input type="text" class="form-control" name="aeronave" id="aeronave" placeholder="ex: Boeing 737" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="milhas" class="form-label">Milhas</label>
+                                    <input type="number" class="form-control" name="milhas" id="milhas" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="preco" class="form-label">Preço (R$)</label>
+                                    <input type="number" class="form-control" name="preco" id="preco" step="0.01" placeholder="ex: 450.50" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="assentos" class="form-label">Nº Assentos</label>
+                                    <input type="number" class="form-control" name="assentos" id="assentos" required>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-warning text-dark fw-bold w-100">Cadastrar Voo</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="mb-3">Voos Atuais (Dicionário de Voos)</h2>
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Código</th> <th>Origem</th> <th>Destino</th> <th>Milhas</th>
+                            <th>Preço (R$)</th> <th>Aeronave</th> <th>Assentos</th> <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for codigo, info in voos.items() %}
+                        <tr>
+                            <td><strong>{{ codigo }}</strong></td>
+                            <td>{{ info.Origem }}</td>
+                            <td>{{ info.Destino }}</td>
+                            <td>{{ info.Milhas }}</td>
+                            <td>R$ {{ "%.2f"|format(info.Preco) }}</td>
+                            <td>{{ info.Aeronave }}</td>
+                            <td>{{ info.Assentos }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.edit_voo_page', codigo=codigo) }}" class="btn btn-sm btn-warning text-dark">Editar</a>
+                                <a href="{{ url_for('admin.delete_voo', codigo=codigo) }}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir o voo {{ codigo }}?')">Excluir</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">Nenhum voo cadastrado no dicionário.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center p-3 mt-4 text-muted">
+        <p>&copy; 2025 Linhas Aéreas ED-II</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

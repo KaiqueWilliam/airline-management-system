@@ -1,13 +1,70 @@
+/* Seu código body continua aqui */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+  background-image: url("{{ url_for('static', filename='images/fundo_aviacao.png') }}"); 
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  padding-top: 70px; 
+  color: #333;
 }
 
-h1 {
-    color: #444;
-    text-align: center;
-    margin-top: 20px;
+.card {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.btn-primary {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #000;
+  transform: scale(1.02);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  border-color: #ffc107;
+}
+
+/* Nova cor principal (Amarelo/Dourado) */
+.navbar-brand {
+  color: #ffc107 !important; 
+  font-weight: bold;
+  display: flex; /* Para alinhar o ícone e o texto */
+  align-items: center; /* Alinha verticalmente */
+}
+
+/* Estilo para a imagem da logo (se usar imagem em vez de emoji) */
+.navbar-brand .logo-icon {
+  height: 28px; /* Ajuste o tamanho conforme necessário */
+  margin-right: 8px; /* Espaço entre a logo e o texto */
+  vertical-align: middle;
+}
+
+/* Espaçamento maior entre os botões na navbar */
+.navbar-nav .nav-item {
+  margin-left: 10px; /* Adiciona espaço entre os itens */
+}
+
+.hero-section {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajuste para o navbar-text quando logado */
+.navbar-text {
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin-right: 15px !important;
+  font-weight: 500;
 }
