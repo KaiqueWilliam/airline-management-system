@@ -6,6 +6,19 @@ from ..structures import (
 
 passenger_bp = Blueprint('passenger', __name__, template_folder='templates')
 
+# Dicionário de Coordenadas (Latitude, Longitude) das cidades
+COORDENADAS = {
+    "Salvador": [-12.9777, -38.5016],
+    "São Paulo": [-23.5505, -46.6333],
+    "Rio de Janeiro": [-22.9068, -43.1729],
+    "Brasília": [-15.7801, -47.9292],
+    "Buenos Aires": [-34.6037, -58.3816],
+    "Recife": [-8.0476, -34.8770],
+    "Paris": [48.8566, 2.3522],
+    "Nova York": [40.7128, -74.0060],
+    "Lisboa": [38.7223, -9.1393]
+}
+
 @passenger_bp.route('/search', methods=['GET', 'POST'])
 def search_flights():
     voos = carregar_voos()
@@ -36,8 +49,14 @@ def search_flights():
                 'dados': dados_voos,
                 'total': custo
             }
-
-        return render_template('passenger/results.html', diretos=diretos, conexao=rota_conexao, origem=origem, destino=destino)
+        
+        # Passamos o dicionário de coordenadas para o template
+        return render_template('passenger/results.html', 
+                             diretos=diretos, 
+                             conexao=rota_conexao, 
+                             origem=origem, 
+                             destino=destino,
+                             coordenadas=COORDENADAS)
 
     cidades = set()
     for v in voos.values():
