@@ -1,126 +1,70 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Voos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
-<body>
+{% extends 'index.html' %}
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand text-warning" href="{{ url_for('admin.dashboard') }}">Painel Admin - Gestão de Voos</a>
-            
-            <div class="d-flex">
-                <a href="{{ url_for('admin.clientes') }}" class="btn btn-outline-info me-2">Gestão de Clientes</a>
-                <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-danger">Sair</a>
-            </div>
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-warning">Painel Administrativo</h2>
+        <div>
+            <span class="text-light me-3">Logado como Admin</span>
+            <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-light btn-sm">Sair</a>
         </div>
-    </nav>
+    </div>
 
-    <main class="container-fluid">
+    <div class="row">
+        <div class="col-md-7 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">✈️ Gestão de Voos</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('admin.add_voo') }}" method="POST" class="mb-3 p-3 bg-light rounded border">
+                        <h6>Novo Voo:</h6>
+                        <div class="row g-2">
+                            <div class="col-md-3"><input type="text" name="codigo" class="form-control form-control-sm" placeholder="Cód" required></div>
+                            <div class="col-md-4"><input type="text" name="origem" class="form-control form-control-sm" placeholder="Origem" required></div>
+                            <div class="col-md-5"><input type="text" name="destino" class="form-control form-control-sm" placeholder="Destino" required></div>
+                            
+                            <div class="col-md-4"><input type="date" name="data" class="form-control form-control-sm" required title="Data do Voo"></div>
+                            <div class="col-md-4"><input type="number" name="milhas" class="form-control form-control-sm" placeholder="Milhas" required></div>
+                            <div class="col-md-4"><input type="number" step="0.01" name="preco" class="form-control form-control-sm" placeholder="Preço" required></div>
+                            
+                            <div class="col-md-8"><input type="text" name="aeronave" class="form-control form-control-sm" placeholder="Aeronave" required></div>
+                            <div class="col-md-4"><input type="number" name="assentos" class="form-control form-control-sm" placeholder="Assentos" required></div>
+                            
+                            <div class="col-12"><button type="submit" class="btn btn-success btn-sm w-100">Cadastrar Voo</button></div>
+                        </div>
+                    </form>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <div class="accordion mb-4" id="accordionCadastro">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm" aria-expanded="false" aria-controls="collapseForm">
-                        Cadastrar Novo Voo
-                    </button>
-                </h2>
-                <div id="collapseForm" class="accordion-collapse collapse" data-bs-parent="#accordionCadastro">
-                    <div class="accordion-body">
-                        <form action="{{ url_for('admin.add_voo') }}" method="POST">
-                            <div class="row g-3">
-                                <div class="col-md-2">
-                                    <label for="codigo" class="form-label">Código Voo</label>
-                                    <input type="text" class="form-control" name="codigo" id="codigo" placeholder="ex: ED400" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="origem" class="form-label">Origem</label>
-                                    <input type="text" class="form-control" name="origem" id="origem" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="destino" class="form-label">Destino</label>
-                                    <input type="text" class="form-control" name="destino" id="destino" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="aeronave" class="form-label">Aeronave</label>
-                                    <input type="text" class="form-control" name="aeronave" id="aeronave" placeholder="ex: Boeing 737" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="milhas" class="form-label">Milhas</label>
-                                    <input type="number" class="form-control" name="milhas" id="milhas" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="preco" class="form-label">Preço (R$)</label>
-                                    <input type="number" class="form-control" name="preco" id="preco" step="0.01" placeholder="ex: 450.50" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="assentos" class="form-label">Nº Assentos</label>
-                                    <input type="number" class="form-control" name="assentos" id="assentos" required>
-                                </div>
-                                <div class="col-md-6 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-warning text-dark fw-bold w-100">Cadastrar Voo</button>
-                                </div>
+                    <div class="list-group" style="max-height: 400px; overflow-y: auto;">
+                        {% for codigo, dados in voos.items() %}
+                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ codigo }}</strong>: {{ dados['Origem'] }} ➝ {{ dados['Destino'] }}
+                                <br>
+                                <small class="text-muted">Data: {{ dados.get('Data', 'N/A') }} | R$ {{ dados['Preco'] }}</small>
                             </div>
-                        </form>
+                            <div class="btn-group">
+                                <a href="{{ url_for('admin.edit_voo_page', codigo=codigo) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                <a href="{{ url_for('admin.delete_voo', codigo=codigo) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Excluir?');">X</a>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
 
-        <h2 class="mb-3">Voos Atuais</h2>
-        <div class="card shadow-sm">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Código</th> <th>Origem</th> <th>Destino</th> <th>Milhas</th>
-                            <th>Preço (R$)</th> <th>Aeronave</th> <th>Assentos</th> <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for codigo, info in voos.items() %}
-                        <tr>
-                            <td><strong>{{ codigo }}</strong></td>
-                            <td>{{ info.Origem }}</td>
-                            <td>{{ info.Destino }}</td>
-                            <td>{{ info.Milhas }}</td>
-                            <td>R$ {{ "%.2f"|format(info.Preco) }}</td>
-                            <td>{{ info.Aeronave }}</td>
-                            <td>{{ info.Assentos }}</td>
-                            <td>
-                                <a href="{{ url_for('admin.edit_voo_page', codigo=codigo) }}" class="btn btn-sm btn-warning text-dark">Editar</a>
-                                <a href="{{ url_for('admin.delete_voo', codigo=codigo) }}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir o voo {{ codigo }}?')">Excluir</a>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="8" class="text-center">Nenhum voo cadastrado.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <div class="col-md-5 mb-4">
+            <div class="card h-100 shadow-sm border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">👥 Gestão de Clientes</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text">Acesse a base de dados de passageiros utilizando a estrutura de <strong>Árvore B</strong>.</p>
+                    <a href="{{ url_for('admin.clientes') }}" class="btn btn-warning btn-lg w-100 fw-bold">Acessar Clientes</a>
+                </div>
             </div>
         </div>
-    </main>
-
-    <footer class="text-center p-3 mt-4 text-muted">
-        <p>&copy; 2025 Linhas Aéreas ED-II</p>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}

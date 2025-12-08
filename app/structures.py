@@ -11,8 +11,9 @@ if not os.path.exists(DATA_DIR):
 CLIENTES_FILE = os.path.join(DATA_DIR, 'clientes.json')
 COMPRAS_FILE = os.path.join(DATA_DIR, 'compras.json')
 VOOS_FILE = os.path.join(DATA_DIR, 'voos.json')
+PASSENGERS_FILE = os.path.join(DATA_DIR, 'passengers.json')
 
-# --- PARTE 3: GRAFOS (Para conexões de voos) ---
+# --- PARTE 3: GRAFOS ---
 class Graph:
     def __init__(self):
         self.edges = {}
@@ -23,32 +24,26 @@ class Graph:
         self.edges[origin].append((dest, code, price))
 
     def find_best_route(self, start, end):
-        # Dijkstra para encontrar rota mais barata
-        # Fila: (custo, cidade_atual, caminho_de_codigos)
         queue = [(0, start, [])]
         visited = set()
         min_cost = {start: 0}
 
         while queue:
             cost, u, path = heapq.heappop(queue)
-
             if u == end:
                 return path, cost
-
             if u in visited:
                 continue
             visited.add(u)
-
             if u in self.edges:
                 for dest, code, price in self.edges[u]:
                     new_cost = cost + price
                     if dest not in min_cost or new_cost < min_cost[dest]:
                         min_cost[dest] = new_cost
                         heapq.heappush(queue, (new_cost, dest, path + [code]))
-        
         return None, float('inf')
 
-# --- PARTE 2: ÁRVORE B (Para Gestão de Clientes) ---
+# --- PARTE 2: ÁRVORE B ---
 class BTreeNode:
     def __init__(self, leaf=False):
         self.leaf = leaf
@@ -131,16 +126,14 @@ class BTree:
             self.inorder_traversal(x.child[-1], result)
         return result
 
-# Instâncias globais (Índices)
+# Variáveis globais
 btree_cpf = BTree(3)
 btree_nome = BTree(3)
 
-# --- Funções de Arquivo (JSON) ---
 def carregar_clientes():
     global btree_cpf, btree_nome
     btree_cpf = BTree(3)
     btree_nome = BTree(3)
-    
     if os.path.exists(CLIENTES_FILE):
         try:
             with open(CLIENTES_FILE, 'r', encoding='utf-8') as f:
@@ -148,43 +141,58 @@ def carregar_clientes():
                 for c in clientes:
                     btree_cpf.insert(c['cpf'], c)
                     btree_nome.insert(c['nome'].lower(), c)
-        except (json.JSONDecodeError, ValueError):
-            pass 
+        except: pass 
 
 def salvar_cliente(cliente):
-    lista_clientes = []
+    lista = []
     if os.path.exists(CLIENTES_FILE):
         try:
             with open(CLIENTES_FILE, 'r', encoding='utf-8') as f:
-                lista_clientes = json.load(f)
-        except:
-            lista_clientes = []
-    
-    lista_clientes.append(cliente)
+                lista = json.load(f)
+        except: pass
+    lista.append(cliente)
     with open(CLIENTES_FILE, 'w', encoding='utf-8') as f:
-        json.dump(lista_clientes, f, indent=4, ensure_ascii=False)
-    
+        json.dump(lista, f, indent=4, ensure_ascii=False)
     btree_cpf.insert(cliente['cpf'], cliente)
     btree_nome.insert(cliente['nome'].lower(), cliente)
 
-def salvar_compra(compra_data):
-    lista_compras = []
+def excluir_cliente_por_cpf(cpf):
+    if not os.path.exists(CLIENTES_FILE): return False
+    try:
+        with open(CLIENTES_FILE, 'r', encoding='utf-8') as f:
+            lista = json.load(f)
+        nova_lista = [c for c in lista if str(c['cpf']) != str(cpf)]
+        if len(nova_lista) == len(lista): return False
+        with open(CLIENTES_FILE, 'w', encoding='utf-8') as f:
+            json.dump(nova_lista, f, indent=4, ensure_ascii=False)
+        carregar_clientes()
+        return True
+    except: return False
+
+# Funções de acesso à memória
+def get_todos_clientes(): return btree_nome.inorder_traversal()
+def buscar_cliente_por_cpf(cpf): return btree_cpf.search(cpf)
+def buscar_cliente_por_nome(nome): return btree_nome.search(nome.lower())
+def buscar_cliente_por_inicial(inicial):
+    return [c for c in btree_nome.inorder_traversal() if c['nome'].lower().startswith(inicial.lower())]
+
+def salvar_compra(compra):
+    lista = []
     if os.path.exists(COMPRAS_FILE):
         try:
             with open(COMPRAS_FILE, 'r', encoding='utf-8') as f:
-                lista_compras = json.load(f)
-        except:
-            lista_compras = []
-            
-    lista_compras.append(compra_data)
+                lista = json.load(f)
+        except: pass
+    lista.append(compra)
     with open(COMPRAS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(lista_compras, f, indent=4, ensure_ascii=False)
+        json.dump(lista, f, indent=4, ensure_ascii=False)
 
+# ATUALIZADO: Agora os voos têm campo "Data"
 def carregar_voos_padrao():
     return {
-        "ED100": { "Origem": "Salvador", "Destino": "São Paulo", "Milhas": 1450, "Preco": 780.50, "Aeronave": "Airbus A320", "Assentos": 180 },
-        "ED202": { "Origem": "Rio de Janeiro", "Destino": "Brasília", "Milhas": 930, "Preco": 550.00, "Aeronave": "Boeing 737", "Assentos": 160 },
-        "ED305": { "Origem": "São Paulo", "Destino": "Buenos Aires", "Milhas": 1690, "Preco": 1200.00, "Aeronave": "Airbus A320", "Assentos": 180 }
+        "ED100": { "Origem": "Salvador", "Destino": "São Paulo", "Milhas": 1450, "Preco": 780.50, "Aeronave": "Airbus A320", "Assentos": 180, "Data": "2025-10-25" },
+        "ED202": { "Origem": "Rio de Janeiro", "Destino": "Brasília", "Milhas": 930, "Preco": 550.00, "Aeronave": "Boeing 737", "Assentos": 160, "Data": "2025-10-26" },
+        "ED305": { "Origem": "São Paulo", "Destino": "Buenos Aires", "Milhas": 1690, "Preco": 1200.00, "Aeronave": "Airbus A320", "Assentos": 180, "Data": "2025-10-27" }
     }
 
 def carregar_voos():
@@ -192,19 +200,35 @@ def carregar_voos():
         try:
             with open(VOOS_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
-            return carregar_voos_padrao()
+        except: return carregar_voos_padrao()
     else:
         padrao = carregar_voos_padrao()
         salvar_todos_voos(padrao)
         return padrao
 
-def salvar_todos_voos(voos_dict):
+def salvar_todos_voos(voos):
     with open(VOOS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(voos_dict, f, indent=4, ensure_ascii=False)
+        json.dump(voos, f, indent=4, ensure_ascii=False)
 
 def gerar_codigo_reserva():
     return str(uuid.uuid4())[:8].upper()
 
-# Inicializa índices ao rodar
+def carregar_usuarios_passageiros():
+    if os.path.exists(PASSENGERS_FILE):
+        try:
+            with open(PASSENGERS_FILE, 'r', encoding='utf-8') as f: return json.load(f)
+        except: return {}
+    return {}
+
+def salvar_novo_usuario(dados):
+    users = carregar_usuarios_passageiros()
+    if dados['email'] in users: return False
+    users[dados['email']] = dados
+    with open(PASSENGERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(users, f, indent=4, ensure_ascii=False)
+    return True
+
+def buscar_usuario_por_email(email):
+    return carregar_usuarios_passageiros().get(email)
+
 carregar_clientes()

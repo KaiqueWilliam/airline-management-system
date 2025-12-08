@@ -1,63 +1,85 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Resultados</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light p-4">
-    <div class="container">
-        <h3 class="mb-4">Opções de voo: <strong>{{ origem }}</strong> ➝ <strong>{{ destino }}</strong></h3>
-        
-        {% if not diretos and not conexao %}
-            <div class="alert alert-warning">Nenhum voo encontrado para este trajeto.</div>
-        {% endif %}
+{% extends 'index.html' %}
 
-        {% if diretos %}
-        <h4 class="text-success border-bottom pb-2">Voos Diretos</h4>
-        {% for v in diretos %}
-            <div class="card mb-3 border-success shadow-sm">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="card-title text-success">{{ v.codigos[0] }}</h5>
-                        <p class="card-text mb-0">Aeronave: {{ v.dados[0].Aeronave }}</p>
-                        <p class="card-text fw-bold">Total: R$ {{ "%.2f"|format(v.total) }}</p>
-                    </div>
-                    <form action="{{ url_for('passenger.buy_ticket') }}" method="POST">
-                        <input type="hidden" name="flight_codes" value="{{ v.codigos[0] }}">
-                        <input type="hidden" name="total_price" value="{{ v.total }}">
-                        <button class="btn btn-success">Comprar Agora</button>
-                    </form>
-                </div>
-            </div>
-        {% endfor %}
-        {% endif %}
-
-        {% if conexao %}
-        <h4 class="text-primary border-bottom pb-2 mt-4">Melhor Conexão (via Grafo)</h4>
-        <div class="card mb-3 border-primary shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-primary">Rota: {{ conexao.codigos|join(' ➝ ') }}</h5>
-                <ul class="list-group list-group-flush mb-3">
-                    {% for dado in conexao.dados %}
-                        <li class="list-group-item">
-                            Voo {{ conexao.codigos[loop.index0] }}: {{ dado.Origem }} ➝ {{ dado.Destino }}
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div class="d-flex justify-content-between align-items-center">
-                    <p class="h5 mb-0">Total da Rota: <strong>R$ {{ "%.2f"|format(conexao.total) }}</strong></p>
-                    <form action="{{ url_for('passenger.buy_ticket') }}" method="POST">
-                        <input type="hidden" name="flight_codes" value="{{ conexao.codigos|join(',') }}">
-                        <input type="hidden" name="total_price" value="{{ conexao.total }}">
-                        <button class="btn btn-primary">Comprar Rota Completa</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <a href="{{ url_for('passenger.search_flights') }}" class="btn btn-secondary mt-3">Nova Pesquisa</a>
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Resultados: <span class="text-primary">{{ origem }}</span> ➝ <span class="text-primary">{{ destino }}</span></h2>
+        <a href="{{ url_for('passenger.search_flights') }}" class="btn btn-outline-secondary">Nova Busca</a>
     </div>
-</body>
-</html>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">Opções de Voo Direto</div>
+        <div class="card-body p-0">
+            {% if diretos %}
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Data</th>
+                            <th>Voo</th>
+                            <th>Origem</th>
+                            <th>Destino</th>
+                            <th>Preço</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in diretos %}
+                            {% set voo = item['dados'][0] %}
+                            {% set codigo = item['codigos'][0] %}
+                            <tr>
+                                <td class="fw-bold text-primary">{{ voo.get('Data', 'N/A') }}</td>
+                                <td class="fw-bold">{{ codigo }}</td>
+                                <td>{{ voo['Origem'] }}</td>
+                                <td>{{ voo['Destino'] }}</td>
+                                <td class="text-success fw-bold">R$ {{ item['total'] }}</td>
+                                <td>
+                                    {% if voo['Assentos'] > 0 %}
+                                        <form action="{{ url_for('passenger.buy_ticket') }}" method="POST">
+                                            <input type="hidden" name="flight_codes" value="{{ codigo }}">
+                                            <input type="hidden" name="total_price" value="{{ item['total'] }}">
+                                            <button type="submit" class="btn btn-primary btn-sm">Comprar</button>
+                                        </form>
+                                    {% else %}
+                                        <button class="btn btn-secondary btn-sm" disabled>Esgotado</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="p-4 text-center text-muted">Nenhum voo direto encontrado.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if conexao %}
+    <div class="card mb-5 shadow-sm border-warning">
+        <div class="card-header bg-warning text-dark">Opção com Conexão</div>
+        <div class="card-body">
+            <h5 class="mb-3">Itinerário: <span class="text-success fw-bold">Total R$ {{ conexao['total'] }}</span></h5>
+            
+            <div class="list-group mb-3">
+                {% for i in range(conexao['codigos']|length) %}
+                    {% set voo = conexao['dados'][i] %}
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-info text-dark">{{ voo.get('Data', 'N/A') }}</span>
+                            <strong>{{ voo['Origem'] }} ➝ {{ voo['Destino'] }}</strong>
+                            <br><small class="text-muted">Voo: {{ conexao['codigos'][i] }}</small>
+                        </div>
+                        <span class="badge bg-secondary">R$ {{ voo['Preco'] }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <form action="{{ url_for('passenger.buy_ticket') }}" method="POST" class="text-end">
+                <input type="hidden" name="flight_codes" value="{{ conexao['codigos']|join(',') }}">
+                <input type="hidden" name="total_price" value="{{ conexao['total'] }}">
+                <button type="submit" class="btn btn-warning fw-bold">Comprar Conexão</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

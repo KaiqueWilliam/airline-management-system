@@ -1,41 +1,83 @@
 {% extends 'index.html' %}
-{% block body %}
-<div class="container mt-5">
-    <h2 class="text-center mb-4">✈️ Para onde você quer ir?</h2>
-    
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 
-    <div class="card p-4 shadow mx-auto" style="max-width: 800px;">
-        <form action="{{ url_for('passenger.search_flights') }}" method="POST">
-            <div class="row g-3">
-                <div class="col-md-5">
-                    <label class="form-label">Origem</label>
-                    <input list="cidades" name="origem" class="form-control" placeholder="Ex: Salvador" required>
-                </div>
-                <div class="col-md-5">
-                    <label class="form-label">Destino</label>
-                    <input list="cidades" name="destino" class="form-control" placeholder="Ex: São Paulo" required>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
-                </div>
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mt-4 mb-5 shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Buscar Passagens</h4>
             </div>
-            <datalist id="cidades">
-                {% for c in cidades %}
-                <option value="{{ c }}">
-                {% endfor %}
-            </datalist>
-        </form>
-    </div>
-    
-    <div class="text-center mt-3">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary">Voltar</a>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label class="form-label">Origem</label>
+                            <select name="origem" class="form-select" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                {% for cidade in cidades %}
+                                <option value="{{ cidade }}">{{ cidade }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Destino</label>
+                            <select name="destino" class="form-select" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                {% for cidade in cidades %}
+                                <option value="{{ cidade }}">{{ cidade }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success w-100">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <h3 class="mb-3">Todos os Voos Disponíveis</h3>
+        
+        {% if voos %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover shadow-sm bg-white rounded">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Data</th>
+                            <th>Origem</th>
+                            <th>Destino</th>
+                            <th>Aeronave</th>
+                            <th>Preço</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for codigo, dados in voos.items() %}
+                        <tr>
+                            <td class="fw-bold text-primary">{{ dados.get('Data', 'N/A') }}</td>
+                            <td>{{ dados['Origem'] }}</td>
+                            <td>{{ dados['Destino'] }}</td>
+                            <td>{{ dados['Aeronave'] }}</td>
+                            <td class="fw-bold text-success">R$ {{ dados['Preco'] }}</td>
+                            <td>
+                                {% if dados['Assentos'] > 0 %}
+                                    <form action="{{ url_for('passenger.buy_ticket') }}" method="POST">
+                                        <input type="hidden" name="flight_codes" value="{{ codigo }}">
+                                        <input type="hidden" name="total_price" value="{{ dados['Preco'] }}">
+                                        <button type="submit" class="btn btn-sm btn-primary">Comprar</button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn btn-sm btn-secondary" disabled>Lotado</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning text-center">Nenhum voo cadastrado.</div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
