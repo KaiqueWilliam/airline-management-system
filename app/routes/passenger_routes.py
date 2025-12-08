@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..structures import (
-    Graph, salvar_cliente, salvar_compra, gerar_codigo_reserva,
-    carregar_voos, salvar_todos_voos, salvar_novo_usuario, buscar_usuario_por_email
+    salvar_cliente, salvar_compra, gerar_codigo_reserva,
+    carregar_voos, salvar_todos_voos, salvar_novo_usuario, buscar_usuario_por_email, flight_graph
 )
 
 passenger_bp = Blueprint('passenger', __name__, template_folder='templates')
@@ -54,16 +54,13 @@ def search_flights():
         origem = request.form['origem']
         destino = request.form['destino']
         
-        graph = Graph()
-        for codigo, dados in voos.items():
-            graph.add_flight(dados['Origem'], dados['Destino'], codigo, dados['Preco'])
-
+        # Otimização: Usa o grafo global pré-carregado em vez de criar um novo a cada busca.
         diretos = []
         for codigo, dados in voos.items():
             if dados['Origem'].lower() == origem.lower() and dados['Destino'].lower() == destino.lower():
                 diretos.append({'codigos': [codigo], 'dados': [dados], 'total': dados['Preco']})
 
-        caminho, custo = graph.find_best_route(origem, destino)
+        caminho, custo = flight_graph.find_best_route(origem, destino)
         rota_conexao = None
         if caminho and (not diretos or caminho != diretos[0]['codigos']):
             dados_voos = [voos[c] for c in caminho]
@@ -107,7 +104,11 @@ def confirm_purchase():
         voos = carregar_voos()
         nome = session['user_name']
         cpf = session['user_cpf']
-        codigos = eval(request.form['codigos'])
+
+        # Correção de Segurança: Substituído o uso perigoso de eval() por um parser seguro.
+        # Isso previne vulnerabilidades de Injeção de Código.
+        codigos_str = request.form['codigos'].strip("[]").replace("'", "").replace('"', '')
+        codigos = [c.strip() for c in codigos_str.split(',') if c.strip()]
         total = float(request.form['total'])
 
         # AUTOMÁTICO: Pega a data do primeiro voo

@@ -33,6 +33,18 @@
         </div>
     </div>
 
+    <div class="mb-3">
+        <strong>Ordenar por:</strong>
+        <div>
+            <a href="{{ url_for('admin.clientes', sort_by='cpf') }}" class="btn btn-sm {{ 'btn-primary' if current_sort == 'cpf' else 'btn-outline-primary' }}">
+                CPF
+            </a>
+            <a href="{{ url_for('admin.clientes', sort_by='nome') }}" class="btn btn-sm {{ 'btn-primary' if current_sort == 'nome' else 'btn-outline-primary' }}">
+                Nome
+            </a>
+        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-striped table-hover shadow bg-white rounded">
             <thead class="table-dark">

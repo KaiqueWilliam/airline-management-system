@@ -1,17 +1,37 @@
+import json
+import os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash, check_password_hash
 from ..structures import (
-    carregar_voos, salvar_todos_voos, 
-    excluir_cliente_por_cpf, get_todos_clientes, 
-    buscar_cliente_por_cpf, buscar_cliente_por_nome, buscar_cliente_por_inicial
+    carregar_voos, salvar_todos_voos,
+    excluir_cliente_por_cpf, get_todos_clientes, get_todos_clientes_por_cpf,
+    buscar_cliente_por_cpf, buscar_cliente_por_nome, buscar_cliente_por_inicial, atualizar_grafo_voos
 )
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin', template_folder='templates')
-admin_users = { "admin": "1234" }
+
+# --- Melhoria de Segurança: Carregar senhas de um arquivo e usar hash ---
+ADMIN_USERS_FILE = os.path.join('data', 'admins.json')
+
+def load_admin_users():
+    """Carrega usuários admin de um arquivo JSON, com senhas hasheadas."""
+    if not os.path.exists(ADMIN_USERS_FILE):
+        # Cria um admin padrão se o arquivo não existir.
+        default_admins = { "admin": { "password": generate_password_hash("1234") } }
+        with open(ADMIN_USERS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(default_admins, f, indent=4)
+        return default_admins
+    
+    with open(ADMIN_USERS_FILE, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+admin_users = load_admin_users()
 
 @admin_bp.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if request.form['username'] in admin_users and admin_users[request.form['username']] == request.form['password']:
+        user = admin_users.get(request.form['username'])
+        if user and check_password_hash(user['password'], request.form['password']):
             session['logged_in'] = True
             return redirect(url_for('admin.dashboard'))
         flash('Login inválido.', 'danger')
@@ -45,6 +65,7 @@ def add_voo():
             "Data": request.form['data']  # Novo campo Data
         }
         salvar_todos_voos(voos)
+        atualizar_grafo_voos() # Atualiza o grafo global de voos
         flash('Voo adicionado.', 'success')
     return redirect(url_for('admin.dashboard'))
 
@@ -69,6 +90,7 @@ def update_voo(codigo):
             "Data": request.form['data']  # Atualiza Data
         })
         salvar_todos_voos(voos)
+        atualizar_grafo_voos() # Atualiza o grafo global de voos
         flash('Voo atualizado.', 'success')
     return redirect(url_for('admin.dashboard'))
 
@@ -78,6 +100,7 @@ def delete_voo(codigo):
     voos = carregar_voos()
     if voos.pop(codigo, None):
         salvar_todos_voos(voos)
+        atualizar_grafo_voos() # Atualiza o grafo global de voos
         flash('Voo excluído.', 'success')
     return redirect(url_for('admin.dashboard'))
 
@@ -89,16 +112,20 @@ def clientes():
         busca = request.form.get('busca')
         tipo = request.form.get('tipo')
         if tipo == 'cpf':
-            res = buscar_cliente_por_cpf(busca)
-            if res: lista = [res]
+            lista = buscar_cliente_por_cpf(busca) or []
         elif tipo == 'nome':
-            res = buscar_cliente_por_nome(busca.lower())
-            if res: lista = [res]
+            lista = buscar_cliente_por_nome(busca.lower()) or []
         elif tipo == 'inicial':
             lista = buscar_cliente_por_inicial(busca.lower())
     else:
-        lista = get_todos_clientes()
-    return render_template('admin/clientes.html', clientes=lista)
+        sort_by = request.args.get('sort_by', 'nome')
+        if sort_by == 'cpf':
+            lista = get_todos_clientes_por_cpf()
+        else:
+            lista = get_todos_clientes()
+
+    current_sort = request.args.get('sort_by', 'nome')
+    return render_template('admin/clientes.html', clientes=lista, current_sort=current_sort)
 
 @admin_bp.route('/cliente/delete/<string:cpf>')
 def delete_cliente(cpf):
