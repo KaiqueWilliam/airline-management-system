@@ -13,7 +13,7 @@ COMPRAS_FILE = os.path.join(DATA_DIR, 'compras.json')
 VOOS_FILE = os.path.join(DATA_DIR, 'voos.json')
 PASSENGERS_FILE = os.path.join(DATA_DIR, 'passengers.json')
 
-# --- PARTE 3: GRAFOS ---
+# ---GRAFOS ---
 class Graph:
     def __init__(self):
         self.edges = {}
@@ -65,8 +65,7 @@ class Graph:
         # Se não houver caminho
         return None, float('inf')
 
-# --- Otimização: Grafo de voos global ---
-# O grafo é inicializado uma vez e atualizado apenas quando há mudanças nos voos.
+# --- Grafo de voos global ---
 flight_graph = Graph()
 
 def atualizar_grafo_voos():
@@ -79,7 +78,7 @@ def atualizar_grafo_voos():
     for codigo, dados in voos.items():
         flight_graph.add_flight(dados['Origem'], dados['Destino'], codigo, dados['Preco'])
 
-# --- PARTE 2: ÁRVORE B ---
+# --- ÁRVORE B ---
 class BTreeNode:
     def __init__(self, leaf=False):
         self.leaf = leaf

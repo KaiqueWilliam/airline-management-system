@@ -62,7 +62,7 @@ def add_voo():
             "Preco": float(request.form['preco']),
             "Aeronave": request.form['aeronave'], 
             "Assentos": int(request.form['assentos']),
-            "Data": request.form['data']  # Novo campo Data
+            "Data": request.form['data']  
         }
         salvar_todos_voos(voos)
         atualizar_grafo_voos() # Atualiza o grafo global de voos

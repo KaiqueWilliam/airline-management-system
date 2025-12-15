@@ -85,17 +85,31 @@ def buy_ticket():
     codigos_lista = codigos_str.split(',')
     total = request.form['total_price']
     
-    # Busca a data do primeiro voo para exibir
     voos = carregar_voos()
-    primeiro_voo = voos.get(codigos_lista[0])
-    data_viagem = primeiro_voo['Data'] if primeiro_voo else "N/A"
+
+    # Busca origem do primeiro voo e destino do último para o mapa
+    origin = None
+    destination = None
+    data_viagem = "N/A"
+
+    if codigos_lista:
+        primeiro_voo_dados = voos.get(codigos_lista[0])
+        if primeiro_voo_dados:
+            origin = primeiro_voo_dados['Origem']
+            data_viagem = primeiro_voo_dados['Data']
+
+        ultimo_voo_dados = voos.get(codigos_lista[-1])
+        if ultimo_voo_dados:
+            destination = ultimo_voo_dados['Destino']
 
     return render_template('passenger/buy.html', 
                            codigos=codigos_lista, 
                            total=total,
-                           data_viagem=data_viagem, # Passa a data fixa
+                           data_viagem=data_viagem,
                            user_name=session.get('user_name'),
-                           user_cpf=session.get('user_cpf'))
+                           user_cpf=session.get('user_cpf'),
+                           origin=origin,
+                           destination=destination)
 
 @passenger_bp.route('/confirm', methods=['POST'])
 def confirm_purchase():
@@ -105,8 +119,7 @@ def confirm_purchase():
         nome = session['user_name']
         cpf = session['user_cpf']
 
-        # Correção de Segurança: Substituído o uso perigoso de eval() por um parser seguro.
-        # Isso previne vulnerabilidades de Injeção de Código.
+       
         codigos_str = request.form['codigos'].strip("[]").replace("'", "").replace('"', '')
         codigos = [c.strip() for c in codigos_str.split(',') if c.strip()]
         total = float(request.form['total'])
